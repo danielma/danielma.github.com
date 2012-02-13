@@ -766,12 +766,13 @@ var GCal = {
         var eventEntry = entries[i];
         // var eventTitle = eventEntry.getTitle().getText();
         // console.log('Event title = ' + eventTitle);
+        // debug.push(eventEntry);
         events.push(new Event({
           title: eventEntry.getTitle().getText(),
           start_time: google.gdata.DateTime.fromIso8601(eventEntry.getTimes()[0].startTime).date,
           end_time: google.gdata.DateTime.fromIso8601(eventEntry.getTimes()[0].endTime).date,
           location: eventEntry.getLocations()[0].valueString,
-          description: eventEntry.getSummary()
+          description: eventEntry.getContent().getText()
         }));
       }
       // console.log(events);

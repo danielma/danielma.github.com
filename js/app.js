@@ -51,12 +51,42 @@ function get_menu(range, list) {
       );
     }
     $(data).each(function(idx, meal) {
-      to_append += "<li><span class='ui-li-count'>" + mealtimes[meal.start_time.getDay()][meal.title.toLowerCase()] + "</span>" + 
-                      meal.description.capitalize() + "</li>"
+      to_append += "<li>"
+        + meal.description.capitalize()
+        + "<span class='ui-li-count'>"
+        + mealtimes[meal.start_time.getDay()][meal.title.toLowerCase()]
+        + "</span>"
+        + "</li>";
     });
     $(list).append(to_append).listview('refresh');
   });
-}
+};
 
-get_menu(0, "#menu-today");
-get_menu(1, "#menu-tomorrow");
+var debug = [];
+
+function get_events(range, cal, list) {
+  GCal.get_calendar(cal, range, function(data) {
+    var to_append = "";
+    $(data).each(function(idx, evt) {
+      console.log(evt);
+      to_append += "<li>"
+        + "<h3>" + evt.title + "</h3>"
+        + "<p>" + evt.start_time.toString("dddd &#97;&#116; h:mm tt") + "</p>";
+        if (evt.description.length > 0) {
+          to_append += "<ul class='nested'><li>"
+            + "<p><strong>" + evt.start_time.toString("dddd &#97;&#116; h:mm tt") + "</strong></p>"
+            + "<p>" + evt.description + "</p>"
+            + "</li></ul>";
+        }
+      to_append += "</li>";
+    });
+    $(list).append(to_append).listview('refresh');
+  });
+};
+
+$(document).ready(function() {
+  get_events("week", GCal.kona_events, "#campus-events");
+  get_events("week", GCal.mauka_theater, "#mauka-events");
+  get_menu(0, "#menu-today");
+  get_menu(1, "#menu-tomorrow");
+});

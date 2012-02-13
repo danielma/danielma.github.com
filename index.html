@@ -5,18 +5,24 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1"> 
     <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0.1/jquery.mobile-1.0.1.min.css" />
     <script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
-    <!--script type="text/javascript" charset="utf-8">
+    <script type="text/javascript" charset="utf-8">
         // Adds a back button for nested lists
         $(document).bind("mobileinit", function(){
-          $.mobile.page.prototype.options.addBackBtn = true;
+            $.mobile.page.prototype.options.addBackBtn = true;
         });
-    </script-->
-    <script src="http://code.jquery.com/mobile/1.0.1/jquery.mobile-1.0.1.min.js"></script>
+        // $(':jqmData(url^=mauka-events)').live('pagebeforecreate', 
+        //           function(event) {
+        //             $(this).filter(':jqmData(url*=ui-page)').find(':jqmData(role=header)')
+        //               .prepend('<a href="#" data-rel="back" data-icon="back">Back</a>')
+        //           });
+    </script>
     <script src="js/date.js" type="text/javascript" charset="utf-8"></script>
     <script type="text/javascript" src="https://www.google.com/jsapi?autoload=%7B%22modules%22%3A%5B%7B%22name%22%3A%22gdata%22%2C%22version%22%3A%222%22%2C%22packages%22%3A%5B%22calendar%22%5D%7D%5D%7D"></script>
     
     <script src="js/calparse.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/app.js" type="text/javascript" charset="utf-8"></script>
+    
+    <script src="http://code.jquery.com/mobile/1.0.1/jquery.mobile-1.0.1.min.js"></script>
     <style>
     .content-primary>h2:first-child {
         margin-top: 0px;
@@ -37,13 +43,13 @@
 </head> 
 <body> 
 
-<div data-role="page" id="food">
+<div data-role="page" id="food" data-add-back-btn="false">
 
 	<div data-role="header">
 		<div data-role="navbar">
 			<ul>
 				<li><a class="ui-btn-active ui-state-persist">Food</a></li>
-				<li><a href="#events" data-add-back-btn="false" data-transition="flip">Events</a></li>
+				<li><a href="#events" data-transition="flip">Events</a></li>
 			</ul>
 		</div><!-- /navbar -->
 	</div><!-- /header -->
@@ -77,12 +83,12 @@
 
 </div><!-- /page#food -->
 
-<div data-role="page" id="events">
+<div data-role="page" id="events" data-add-back-btn="false">
 
 	<div data-role="header">
 		<div data-role="navbar">
 			<ul>
-				<li><a href="#food" data-add-back-btn="false" data-transition="flip" data-direction="reverse">Food</a></li>
+				<li><a href="#food" data-transition="flip" data-direction="reverse">Food</a></li>
 				<li><a class="ui-btn-active ui-state-persist">Events</a></li>
 			</ul>
 		</div><!-- /navbar -->
@@ -92,21 +98,26 @@
         <div class="content-primary">
             <h2>Campus</h2>
             
-            
+            <ul data-role="listview" data-inset="true" data-theme="d" class="whitespace-normal" id="campus-events"></ul>
+             
             <h2>Mauka Theater</h2>
             
-            <ul data-role="listview" data-inset="true" data-theme="d" class="whitespace-normal">
+            <ul data-role="listview" data-inset="true" data-theme="d" class="whitespace-normal" id="mauka-events">
+                
+                <!--
                 <li><h3>Media Advocacy Film with Voice for the Voiceless DTS</h3>
                     <p>Thursday at 8:00 PM</p>
                     <ul class="nested"><li>
                         <p><strong>Thursday at 8:00 PM</strong></p>
                         <p>Media Advocacy Seminar with Voice for the Voiceless DTS. Enjoy an engaging discussion and film. (Open to all YWAMers)</p>
                     </li></ul>
+                </li>
                 <li>
                     <h3>Culture Shapers</h3>
                     <p>Friday at 6:30 PM</p>
                     
                 </li>
+                -->
                 
             </ul>
             
