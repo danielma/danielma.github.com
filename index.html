@@ -3,13 +3,18 @@
 	<head> 
 	<title>Kona Calendar</title> 
 	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <link rel=”apple-touch-icon” href=”/apple-touch-icon.png”/>
     <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0.1/jquery.mobile-1.0.1.min.css" />
     <script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
     <script type="text/javascript" charset="utf-8">
         // Adds a back button for nested lists
-        $(document).bind("mobileinit", function(){
+        $(document).bind("mobileinit", function(){            
             $.mobile.page.prototype.options.addBackBtn = true;
         });
+        // $(document).bind("pagebeforecreate", function(){            
+        //     $.mobile.showPageLoadingMsg();
+        // });
+        
         // $(':jqmData(url^=mauka-events)').live('pagebeforecreate', 
         //           function(event) {
         //             $(this).filter(':jqmData(url*=ui-page)').find(':jqmData(role=header)')
