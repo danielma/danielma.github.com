@@ -35,7 +35,26 @@ var mealtimes = {
   }
 };
 
+var queue = {
+  events: [],
+  
+  addEvent: function() {
+    this.events.push("an event");
+    console.log("queue size is " + this.events.length);
+  }, 
+  
+  finishEvent: function() {
+    this.events.pop();
+    console.log("queue size is " + this.events.length);
+    if (this.events.length === 0) {
+      console.log("hide that!")
+      $.mobile.hidePageLoadingMsg();
+    };
+  }
+};
+
 function get_menu(range, list) {
+  queue.addEvent();
   YConnect.get_calendar(range, function(data) {
     var to_append = "";
     var day = data[0].start_time.getDay();
@@ -58,17 +77,16 @@ function get_menu(range, list) {
         + "</span>"
         + "</li>";
     });
+    queue.finishEvent();
     $(list).append(to_append).listview('refresh');
   });
 };
 
-var debug = [];
-
 function get_events(range, cal, list) {
+  queue.addEvent();
   GCal.get_calendar(cal, range, function(data) {
     var to_append = "";
     $(data).each(function(idx, evt) {
-      console.log(evt);
       to_append += "<li>"
         + "<h3>" + evt.title + "</h3>"
         + "<p>" + evt.start_time.toString("dddd &#97;&#116; h:mm tt") + "</p>";
@@ -80,6 +98,7 @@ function get_events(range, cal, list) {
         }
       to_append += "</li>";
     });
+    queue.finishEvent();
     $(list).append(to_append).listview('refresh');
   });
 };
