@@ -3,6 +3,7 @@ Chrome
 Firefox
 Opera
 Safari
+IE 7-8
 */
 
 html, body {
@@ -24,7 +25,7 @@ h4 { font-size: 1.3em; }
 h5 { font-size: 1.2em; }
 h6 { font-size: 1.1em; }
 
-p {
+p, ul {
   margin: 14px 0;
 }
 
@@ -80,21 +81,26 @@ ul {
   margin: 0 25px 20px 25px;
 }
 #columns > div {
-	-webkit-box-flex: 1;
-	-moz-box-flex: 1;
-	box-flex: 1;
-	width: 30px;
-	padding: 20px 10px;
+  width: 285px;
+	padding: 20px 10px 0px;
 	border: 1px solid #CCC;
+	background-color: #FFF;
+	
+  -webkit-box-flex: 1;
+   -moz-box-flex: 1;
+   box-flex: 1;
 	
 	-moz-border-radius: 10px;
 	-webkit-border-radius: 10px;
 	border-radius: 10px;
-	behavior: url(border-radius.htc);
 }
 
 #column2 {
   margin: 0px 10px;
+}
+
+#columns > div p {
+  text-align: justify;
 }
 
 /* Footer */
