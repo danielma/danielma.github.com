@@ -1,0 +1,9 @@
+.icon {
+  display: inline-block;
+  padding-right: 20px;
+  line-height: 17px;
+}
+
+.pdf {
+  background: transparent url(pdficon_small.gif) center right no-repeat;
+}

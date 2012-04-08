@@ -1,0 +1,22 @@
+/*
+I chose to use CSS for this problem instead of jQuery. 
+It could be done in jQuery, but CSS has a few advantages:
+   1. It's more in line with the separate purposes of HTML, CSS, and Javascript
+   2. It's easier
+   3. It looks nicer because icons will always be properly vertically aligned
+   4. It doesn't require any extras on the page
+
+Tested in
+IE 7-8
+Chrome
+Firefox
+Safari
+Opera
+*/
+
+a[href$='.pdf'] {
+    display: inline-block;
+    padding-right: 20px;
+    line-height: 17px;
+    background: transparent url(pdficon_small.gif) center right no-repeat;
+}

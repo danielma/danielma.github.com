@@ -1,0 +1,44 @@
+html, body {
+  font-family: 'Helvetica', 'Arial', sans-serif;
+  font-size: 16px;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+th {
+  background-color: #BDE6FF;
+}
+
+th, td {
+  border-color: #666;
+  border-style: solid;
+  border-width: 1px 1px;
+  padding: 2px 5px;
+  text-align: left;
+}
+
+.sortable th {
+  cursor: pointer;
+  padding-right: 20px;
+  line-height: 18px;
+  background: url(arrows.gif) no-repeat right 3px #E3EFFF;
+}
+
+th.sortedBy {
+  background-color: #A3CAEB;
+  background-position: right -30px;
+}
+
+th.sortedBy.reverse {
+  background-position: right -14px;
+}
+
+.even td {
+  background-color: #CCC;
+}
+
+.odd td {
+  background-color: #FFF;
+}

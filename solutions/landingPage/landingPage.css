@@ -1,0 +1,116 @@
+/* Tested in
+Chrome
+Firefox
+Opera
+Safari
+*/
+
+html, body {
+  margin: 0 auto;
+  font-family: 'Arial', sans-serif;
+  font-size: 12px;
+  line-height: 14px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 900;
+  margin: 0 0 1em 0;
+}
+
+h1 { font-size: 1.6em; }
+h2 { font-size: 1.5em; }
+h3 { font-size: 1.4em; }
+h4 { font-size: 1.3em; }
+h5 { font-size: 1.2em; }
+h6 { font-size: 1.1em; }
+
+p {
+  margin: 14px 0;
+}
+
+ul {
+  list-style-type: disc;
+  padding-left: 2em;
+}
+
+#container {
+  margin: 0 auto;
+  width: 1000px;
+  display: block;
+}
+
+/* Navigation Bar */
+
+#navBar {
+  border-bottom: 5px solid #0E7FFF;
+  position: relative;
+  height: 64px;
+  margin-bottom: 20px;
+}
+
+#siteLogo {
+  position: absolute;
+  right: 60px;
+}
+
+/* Main content */
+
+#mainContent {
+  width: 950px;
+  margin: 0 25px 40px 25px;
+}
+
+#intropic {
+  float: left;
+  padding-right: 10px; 
+}
+
+#intro p {
+  text-align: justify;
+}
+
+/* Columns */
+
+#columns {
+  display: -webkit-box;
+  display: -moz-box;
+  display: box;
+  
+  width: 950px;
+  margin: 0 25px 20px 25px;
+}
+#columns > div {
+	-webkit-box-flex: 1;
+	-moz-box-flex: 1;
+	box-flex: 1;
+	width: 30px;
+	padding: 20px 10px;
+	border: 1px solid #CCC;
+	
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	behavior: url(border-radius.htc);
+}
+
+#column2 {
+  margin: 0px 10px;
+}
+
+/* Footer */
+
+#footer {
+  background-color: #0E7FFF;
+  height: 30px;
+  line-height: 30px;
+  padding: 0 20px;
+  text-align: right;
+}
+
+#footer #navigation {
+  float: left;
+}
+
+#footer a {
+  color: #FFF;
+}

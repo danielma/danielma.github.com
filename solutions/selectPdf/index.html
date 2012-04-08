@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Select PDF Links</title>        
+    <style>
+        li { list-style-type: none; }
+        body { font-family: Arial, Sans-Serif; color: #000; font-size: .75em;}        
+        li a:link, li a:active, li a:visited { text-decoration: none; color: #00f; }
+        li a:hover { text-decoration: underline; }             
+    </style>
+    
+    <!-- CSS solution -->
+    <link rel="stylesheet" href="selectPdf.css" type="text/css" media="screen" title="no title" charset="utf-8">
+</head>
+<body>
+    <p>Using jQuery, select all hyperlinks which link to PDF files and add the image provided (pdficon_small.gif) after the link to indicate it requires Adobe Reader to open the link.</p>
+    <ul>
+        <li><a href="http://www.yahoo.com">Yahoo</a></li>
+        <li><a href="http://live.visitmix.com/">Mix</a></li>
+        <li><a href="http://www.asp.net/mvc">ASP.Net MVC</a></li>
+        <li>
+            <ul>
+                <li><a href="pdf/EF_Tutorial_CreatingEFDataModel.pdf">Entity Framework Tutorial - Creating Data Model</a></li>
+                <li><a href="pdf/EF_Tutorial_BasicCRUD.pdf">Entity Framework Tutorial - Basic CRUD</a></li>
+                <li><a href="pdf/EF_Tutorial_FilteringPaging.pdf">Entity Framework Tutorial - Sorting, Filtering, & Paging</a></li>
+            </ul>
+        </li>
+        
+       
+    </ul>
+    
+    <!-- jQuery solution -->
+    <!--
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="selectPdf.js" type="text/javascript" charset="utf-8"></script>
+        <link rel="stylesheet" href="iconStyle.css" type="text/css" media="screen" title="no title" charset="utf-8">
+    -->
+
+</body>
+</html>
