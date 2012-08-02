@@ -22,7 +22,7 @@ var mealtimes = {
   4: { // Thursday
     breakfast : "6:15 - 7:15 AM",
     lunch: "11:30 - 1:00 PM", 
-    dinner: "4:30 - 6:00 PM"
+    dinner: "4:30 - 5:30 PM"
   },
   5: { // Friday
     breakfast : "6:15 - 7:15 AM",
