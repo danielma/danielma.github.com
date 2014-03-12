@@ -1,538 +1,139 @@
-(function() {
-	if (!window.SB.EventManager)
-	{
-		window.SB.EventManager = {};
-	}
+<!DOCTYPE html> 
+<html> 
+	<head> 
+	<title>Kona Calendar</title> 
+	<meta name="viewport" content="width=320.1, initial-scale=1"> 
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0.1/jquery.mobile-1.0.1.min.css" />
+    <script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        // Adds a back button for nested lists
+        $(document).bind("mobileinit", function(){            
+            $.mobile.page.prototype.options.addBackBtn = true;
+        });
+        // $(document).bind("pagebeforecreate", function(){            
+        //     $.mobile.showPageLoadingMsg();
+        // });
+        
+        // $(':jqmData(url^=mauka-events)').live('pagebeforecreate', 
+        //           function(event) {
+        //             $(this).filter(':jqmData(url*=ui-page)').find(':jqmData(role=header)')
+        //               .prepend('<a href="#" data-rel="back" data-icon="back">Back</a>')
+        //           });
+    </script>
+    <script src="js/date.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi?autoload=%7B%22modules%22%3A%5B%7B%22name%22%3A%22gdata%22%2C%22version%22%3A%222%22%2C%22packages%22%3A%5B%22calendar%22%5D%7D%5D%7D"></script>
+    
+    <script src="js/calparse.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/app.js" type="text/javascript" charset="utf-8"></script>
+    
+    <script src="http://code.jquery.com/mobile/1.0.1/jquery.mobile-1.0.1.min.js"></script>
+    <style>
+    .content-primary>h2:first-child {
+        margin-top: 0px;
+    }
+    ul.nested *, .whitespace-normal * {
+        white-space: normal;
+    }
+    ul.nested.ui-listview {
+        margin-top: 0;
+    }
+    ul.nested.ui-listview li {
+        border: none;
+    }
+    ul.nested.ui-listview li * {
+        font-size: 16px;
+    }
+    </style>
+</head> 
+<body> 
 
-	var vm = function() {
-		var self = this;
-		
-		self.apiUrl = "//" + SB.config.apiUrl + "/";
-        self.debugMode = false;
+<div data-role="page" id="food" data-add-back-btn="false">
 
-		self.mode = "";
-        self.eventId = "";
-        self.jwt = "";
+	<div data-role="header">
+		<div data-role="navbar">
+			<ul>
+				<li><a class="ui-btn-active ui-state-persist">Food</a></li>
+				<li><a href="#events" data-transition="flip">Events</a></li>
+			</ul>
+		</div><!-- /navbar -->
+	</div><!-- /header -->
 
-		self.campuses = ko.observable([]);
-		self.ministries = ko.observable([]);
-        self.countries = ko.observable([]);
-        self.defaultTags = ko.observable([]);
-		
-		self.title = ko.observable("");
-		self.description = ko.observable("");
-		self.campusId = ko.observable("");		
-		self.ministryId = ko.observable("");	
-		self.startDate = ko.observable("");
-		self.endDate = ko.observable("");
-        self.tags = ko.observable("");
-        self.imageUrl = ko.observable("");
-        self.capacity = ko.observable("");
-
-        self.contactName = ko.observable("");
-        self.contactEmail = ko.observable("");
-        self.contactPhone = ko.observable("");
-
-        self.venueName = ko.observable("");
-        self.venueAddress1 = ko.observable("");
-        self.venueAddress2 = ko.observable("");
-        self.venueCity = ko.observable("");
-        self.venueRegion = ko.observable("");
-        self.venuePostalCode = ko.observable("");
-        self.venueCountry = ko.observable("");
-
-        self.isPrivate = ko.observable(false);
-
-		self.init = function(element, params) {
-            self.mode = params.mode;
-            self.eventId = params.id;
-            self.jwt = params.jwt;
-            self.knockoutWidget = element;
-
-			if (self.mode === undefined || self.mode === "") {
-				$('#btnSubmit').prop("disabled", true);
-				console.log("Event manager widget: Invalid mode. Please use 'add' or 'edit'.");
-				return;
-			}
-
-            if (self.mode === "edit" && (self.eventId === undefined || self.eventId === "")) {
-                console.log("Please enter an event id when editing.");
-                return;
-            }
-
-            if (self.jwt === undefined || self.jwt === "") {
-                $('#btnSubmit').prop("disabled", true);
-                console.log("No JWT! Cannot allow unauthorized access to adding/editing events.");
-                return;
-            }
-
-            try {
-                self.preBind();
-                self.bind(element);
-                self.postBind();
-            }
-            catch (e) {
-                SB.util.logError(e);
-            }
-		};
-
-        self.preBind = function() {
-            self.campusId.subscribe(function(newCampusId) {
-                self.loadMinistries(newCampusId);
-            });
-
-            self.loadCountries();
-            self.loadCampuses();
-            self.loadTags();
-
-            if (self.mode === "edit") {
-                self.loadEvent(self.eventId);
-            }
-        };
-
-        self.bind = function(element) {
-            window.SB.EventManager = $.extend({}, self, window.SB.EventManager);
-            ko.cleanNode(element);
-            ko.applyBindings(window.SB.EventManager, element);
-        };
-
-        self.postBind = function() {
-            self.bindDatetimepicker();
-            self.selectizeTags();
-            self.bindImageUploader();
-            self.applyChosenToSelects();
-            self.loadEventImageUrl();
-            self.bindRedactor();
-        };
-
-		self.reset = function() {
-            window.SB.EventManager = {};
-
-			self.mode = "";
-            self.eventId = "";
-            self.jwt = "";
-
-            self.campuses = ko.observable([]);
-            self.ministries = ko.observable([]);
-            self.countries = ko.observable([]);
-            self.defaultTags = ko.observable([]);
-
-            self.title = ko.observable("");
-            self.description = ko.observable("");
-            self.campusId = ko.observable("");
-            self.ministryId = ko.observable("");
-            self.startDate = ko.observable("");
-            self.endDate = ko.observable("");
-            self.tags = ko.observable("");
-            self.imageUrl = ko.observable("");
-            self.capacity = ko.observable("");
-
-            self.contactName = ko.observable("");
-            self.contactEmail = ko.observable("");
-            self.contactPhone = ko.observable("");
-
-            self.venueName = ko.observable("");
-            self.venueAddress1 = ko.observable("");
-            self.venueAddress2 = ko.observable("");
-            self.venueCity = ko.observable("");
-            self.venueRegion = ko.observable("");
-            self.venuePostalCode = ko.observable("");
-            self.venueCountry = ko.observable("");
-
-            self.isPrivate = ko.observable(false);
-		};
-
-        // Insert/update functions.
-		self.submit = function() {
-			$('#startDate').parsley('addConstraint', { beforedate: '#endDate' });
-
-            var bOk = true;
-            var badControls = [];
-
-			$('#eventManager').find('input[parsley-error-message]').each(function(index, input) {
-				var b = $(this).parsley('validate');
-				if (b === false) {
-                    badControls.push(input);
-                    bOk = false;
-                }
-			});
+	<div data-role="content">	
+        <div class="content-primary">
+            <h2>Today</h2>
             
-            $('.updateServerError').remove();
+            <ul data-role="listview" data-inset="true" data-theme="d" id="menu-today">
+                
+                
+                <!--
+                <li>
+                    <span class="ui-li-count">6:15 - 7:15 AM</span>
+                    Pancakes
+                </li>
+                <li><span class="ui-li-count">5:00 - 6:30 PM</span>
+                    Teryiaki meatballs, rice
+                </li>
+                -->
+            </ul>
+            
+            <h2>Tomorrow</h2>
+            
+            <ul data-role="listview" data-inset="true" data-theme="d" id="menu-tomorrow">
+            </ul>
+            
+            
+        </div>        
+	</div><!-- /content -->
 
-            if (!bOk) {
-                $(badControls[0]).focus();
-                return;
-            }
+</div><!-- /page#food -->
 
-            if (self.mode === "add") {
-                self.createEvent();
-            } else if (self.mode === "edit") {
-                self.updateEvent();
-            }
-		};
+<div data-role="page" id="events" data-add-back-btn="false">
 
-		self.createEvent = function() {
-			$.ajax({
-				url: self.apiUrl + "event", 
-				type: "POST",
-				cache: false,
-                beforeSend: function(xhr) { xhr.setRequestHeader("Authorization", "Bearer " + self.jwt); },
-				data: 
-				{
-					Title: self.title(),
-					Description: self.description(),
-					StartDate: self.startDate(),
-					EndDate: self.endDate(),
-					MinistryId: self.ministryId(),
-					CampusId: self.campusId(),
-					Tags: $('#tags').val(),
-                    ImageUrl: self.imageUrl(),
-                    Capacity: self.capacity(),
-                    ContactName: self.contactName(),
-                    ContactEmail: self.contactEmail(),
-                    ContactPhone: self.contactPhone(),
-                    VenueName: self.venueName(),
-                    VenueAddress1: self.venueAddress1(),
-                    VenueAddress2: self.venueAddress2(),
-                    VenueCity: self.venueCity(),
-                    VenueRegion: self.venueRegion(),
-                    VenuePostalCode: self.venuePostalCode(),
-                    VenueCountry: self.venueCountry(),
-                    IsPublic: !self.isPrivate()
-				}
-			}).done(function(response) {
-                if (typeof(window.SB.EventManager.onAdd) !== "undefined") {
-                    window.SB.EventManager.onAdd(response);
-                }
-			});
-		};
-		
-		self.updateEvent = function() {
-            $.ajax({
-                url: self.apiUrl + "event",
-                type: "PUT",
-                cache: false,
-                beforeSend: function(xhr) { xhr.setRequestHeader("Authorization", "Bearer " + self.jwt); },
-                data:
-                {
-                    EventId: self.eventId,
-                    Title: self.title(),
-                    Description: self.description(),
-                    StartDate: self.startDate(),
-                    EndDate: self.endDate(),
-                    MinistryId: self.ministryId(),
-                    CampusId: self.campusId(),
-                    Tags: $('#tags').val(),
-                    ImageUrl: self.imageUrl(),
-                    Capacity: self.capacity(),
-                    ContactName: self.contactName(),
-                    ContactEmail: self.contactEmail(),
-                    ContactPhone: self.contactPhone(),
-                    VenueName: self.venueName(),
-                    VenueAddress1: self.venueAddress1(),
-                    VenueAddress2: self.venueAddress2(),
-                    VenueCity: self.venueCity(),
-                    VenueRegion: self.venueRegion(),
-                    VenuePostalCode: self.venuePostalCode(),
-                    VenueCountry: self.venueCountry(),
-                    IsPublic: !self.isPrivate()
-                }
-            }).fail(function() {
-                SB.util.logError("Server returned an error while attempting to update event id: " + self.eventId);
-                var btnSubmit = $("#btnSubmit");
-                if (btnSubmit.siblings('.updateServerError').length === 0) {
-                    btnSubmit.before("<p class='error updateServerError' style='color: #e70707'>There was a problem editing the event. Please contact IT</p>");
-                }
-            }).done(function(success) {
-                if (typeof(window.SB.EventManager.onUpdate) !== "undefined") {
-                    window.SB.EventManager.onUpdate(self.eventId);
-                }
-            });
-        };
+	<div data-role="header">
+		<div data-role="navbar">
+			<ul>
+				<li><a href="#food" data-transition="flip" data-direction="reverse">Food</a></li>
+				<li><a class="ui-btn-active ui-state-persist">Events</a></li>
+			</ul>
+		</div><!-- /navbar -->
+	</div><!-- /header -->
 
-        // Pre bind functions
-		self.loadEvent = function(eventId) {
-            if (self.debugMode) { console.log("Loading eventId: " + eventId); }
+	<div data-role="content">	
+        <div class="content-primary">
+            <h2>Campus</h2>
+            
+            <ul data-role="listview" data-inset="true" data-theme="d" class="whitespace-normal" id="campus-events"></ul>
+             
+            <h2>Mauka Theater</h2>
+            
+            <ul data-role="listview" data-inset="true" data-theme="d" class="whitespace-normal" id="mauka-events">
+                
+                <!--
+                <li><h3>Media Advocacy Film with Voice for the Voiceless DTS</h3>
+                    <p>Thursday at 8:00 PM</p>
+                    <ul class="nested"><li>
+                        <p><strong>Thursday at 8:00 PM</strong></p>
+                        <p>Media Advocacy Seminar with Voice for the Voiceless DTS. Enjoy an engaging discussion and film. (Open to all YWAMers)</p>
+                    </li></ul>
+                </li>
+                <li>
+                    <h3>Culture Shapers</h3>
+                    <p>Friday at 6:30 PM</p>
+                    
+                </li>
+                -->
+                
+            </ul>
+            
+            
+        </div>		
+	</div><!-- /content -->
 
-            $.ajax({
-                url: self.apiUrl + "event?eventId=" + eventId,
-                type: "GET",
-                async: false,
-                dataType: "json"
-            }).done(function(response) {
-                self.title(response.Title);
-                self.description(response.Description);
-                self.startDate(moment(response.StartDate, "YYYY-MM-DDThh:mm:ss").format("MM/DD/YYYY hh:mm a"));
-                self.endDate(moment(response.EndDate, "YYYY-MM-DDThh:mm:ss").format("MM/DD/YYYY hh:mm a"));
 
-                // This is gross, but important! Since ministries depend on campus, we _have_ to set
-                // campus first. Remember there is an event on campusId change. When it changes, we load ministries.
-                // If you don't keep this order, then things _will_ break.
-                self.campusId(response.CampusId);
-                self.ministryId(response.MinistryId);
+</div><!-- /page#events -->
 
-                self.tags(response.Tags);
-                self.imageUrl(response.ImageUrl);
-                self.capacity(response.Capacity);
 
-                self.contactName(response.ContactName);
-                self.contactEmail(response.ContactEmail);
-                self.contactPhone(response.ContactPhone);
-
-                self.venueName(response.VenueName);
-                self.venueAddress1(response.VenueAddress1);
-                self.venueAddress2(response.VenueAddress2);
-                self.venueCity(response.VenueCity);
-                self.venueRegion(response.VenueRegion);
-                self.venuePostalCode(response.VenuePostalCode);
-                self.venueCountry((response.VenueCountry === "United States") ? "US" : response.VenueCountry);
-
-                self.isPrivate(!response.IsPublic);
-            });
-		};
-
-		self.loadCampuses = function() {
-            if (self.debugMode) { console.log("Loading campuses"); }
-
-			$.ajax({
-				url: self.apiUrl + "campus",
-				type: "GET",
-				async: false,
-				dataType: "json"
-            }).done(function(response) {
-                var campuses = [];
-
-                campuses.push({ id: 0, name: i18n.gettext("Select campus ...") });
-
-                $(response).each(function() {
-                    campuses.push({ id: this.ID, name: this.Name });
-                });
-
-                self.campuses(campuses);
-                $("#campus").trigger("chosen:updated");
-			});
-		};
-
-		self.loadMinistries = function(campusId) {
-			$.ajax({
-				url: self.apiUrl + "campusministry?campusid=" + campusId,
-				type: "GET",
-				async: false,
-				dataType: "json"
-            }).done(function(response) {
-                var ministries = [];
-
-                ministries.push({ id: 0, name: i18n.gettext("Select ministry ...") });
-
-                $(response).each(function() {
-                    ministries.push({ id: this.Id, name: this.Name });
-                });
-
-                self.ministries(ministries);
-                $("#ministry").trigger("chosen:updated");
-			});
-		};
-
-        self.loadCountries = function() {
-            $.ajax({
-                url: self.apiUrl + "country",
-                type: "GET",
-                async: false,
-                dataType: "json"
-            }).done(function(response) {
-                    var countries = [];
-
-                    $(response).each(function() {
-                        countries.push({ name: this.Name, code: this.Code });
-                    });
-
-                    self.countries(countries);
-                    $("#venueCountry").trigger("chosen:updated");
-                });
-        };
-		
-		self.loadTags = function() {
-			$.ajax({
-				url: self.apiUrl + "tag", 
-				type: "GET",
-				async: false,
-				dataType: "json"
-            }).done(function(response) {
-                var defaultTags = [];
-
-                $(response).each(function() {
-                    defaultTags.push({ id: this.TagID, name: this.Name });
-                });
-
-                self.defaultTags(defaultTags);
-			});
-		};
-
-        // Post bind functions
-        self.bindDatetimepicker = function() {
-            // We have to do some manual binding of dates since the datetimepicker control
-            // blows past knockout by cloning elements.
-            $('#startDate').datetimepicker({
-                format: "m/d/Y h:i a",
-                formatTime: "h:i a",
-                onClose: function() {
-                    self.startDate($('#startDate').val());
-                }
-            });
-            $('#endDate').datetimepicker({
-                format: "m/d/Y h:i a",
-                formatTime: "h:i a",
-                onClose: function() {
-                    self.endDate($('#endDate').val());
-                }
-            });
-        };
-
-        self.selectizeTags = function() {
-            $('#tags').selectize({
-                persist: false,
-                options: self.defaultTags(),
-                labelField: 'name',
-                valueField: 'name'
-            });
-        };
-
-        self.bindImageUploader = function() {
-            $('#imageUpload').fineUploader({
-                request: {
-                    endpoint: self.apiUrl + 'cdnasset',
-                    params: { "path" : "eventbrite/" }
-                },
-                deleteFile: {
-                    enabled: false
-                },
-                callbacks: {
-                    onComplete: function(id, fileName, response) {
-                        if (response.success) {
-                            self.imageUrl(response.cdnUrl);
-
-                            delete $('#imageUpload').fineUploader;
-
-                            self.appendImage(response.cdnUrl);
-                        }
-                    }
-                }
-            });
-        };
-
-        self.applyChosenToSelects = function() {
-            $('#campus').chosen({
-                disable_search_threshold: 50,
-                width: '100%'
-            });
-
-            $('#ministry').chosen({
-                disable_search_threshold: 50,
-                width: '100%'
-            });
-
-            $('#venueCountry').chosen({
-                disable_search_threshold: 50,
-                width: '100%'
-            });
-        };
-
-        self.loadEventImageUrl = function() {
-            if (self.imageUrl() !== "" && self.imageUrl() !== null) {
-                console.log(self.imageUrl());
-                self.appendImage(self.imageUrl());
-            }
-        };
-
-        self.bindRedactor = function() {
-            $('#eventDescription').redactor({
-                buttons: ['formatting', '|', 'bold', 'italic', 'underline', 'deleted', '|',
-                    'unorderedlist', 'orderedlist', '|',
-                    'link', '|', 'fontcolor', 'backcolor', '|', 'horizontalrule',
-                    '|', 'printButton'],
-                changeCallback: function(html)
-                {
-                    self.description(html);
-                }
-            });
-        };
-
-        // Image upload functions
-        self.appendImage = function(cdnUrl) {
-            var div = $('<div id="uploadedImage"></div>');
-
-            var img = $('<img class="qq-uploaded-image"/>');
-            img.attr("src", cdnUrl);
-            img.attr("height", "220px");
-            div.append(img);
-
-            var span = $('<span class="qq-delete-image">Delete Image</span>');
-            $(span).click(self.deleteImage);
-            div.append(span);
-
-            $('#imageUpload').html("");
-            $('#imageUpload').append(div);
-        };
-
-        self.deleteImage = function() {
-            $('#imageUpload').html("");
-            self.bindImageUploader();
-        };
-
-        // Events
-        self.copyEvent = function() {
-            $.ajax({
-                url: self.apiUrl + "event?eventId=" + self.eventId,
-                type: "POST",
-                dataType: "json",
-                beforeSend: function(xhr) { xhr.setRequestHeader("Authorization", "Bearer " + self.jwt); }
-            }).done(function(response, status) {
-                if (typeof(window.SB.EventManager.onCopy) !== "undefined") {
-                    window.SB.EventManager.onCopy(response);
-                }
-            });
-        };
-
-        self.deleteEvent = function() {
-            $.ajax({
-                url: self.apiUrl + "event?eventId=" + self.eventId,
-                type: "DELETE",
-                dataType: "json",
-                beforeSend: function(xhr) { xhr.setRequestHeader("Authorization", "Bearer " + self.jwt); }
-            }).done(function(response, status) {
-                    if (typeof(window.SB.EventManager.onDelete) !== "undefined") {
-                        window.SB.EventManager.onDelete(event);
-                    }
-                });
-        };
-
-        self.cancel = function() {
-            if (typeof(window.SB.EventManager.onCancel) !== "undefined") {
-                window.SB.EventManager.onCancel();
-            }
-        };
-	};
-		
-    SB.widgets.registerVM("EventManagerViewModel", vm);	
-})();
-
-function getConfirmationEvent(eventId, callback) {
-    $.ajax({
-        url: "//" + SB.config.apiUrl + "/event?eventId=" + eventId,
-        type: "GET",
-        dataType: "json"
-    }).done(function(response) {
-        callback(response);
-    });
-}
-
-function duplicateEvent(eventId, jwt, callback) {
-    $.ajax({
-        url: "//" + SB.config.apiUrl + "/event?eventId=" + eventId,
-        type: "POST",
-        dataType: "json",
-        beforeSend: function(xhr) { xhr.setRequestHeader("Authorization", "Bearer " + jwt); }
-    }).done(function(response, status) {
-            callback(response);
-    });
-}
+</body>
+</html>
